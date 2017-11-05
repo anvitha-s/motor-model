@@ -1,5 +1,6 @@
 V_amp = 200;
 a=0.3;
+dt=0.001;
 L=100;
 v2_u = 1:V_amp/(a*L):V_amp;
 v2_d = V_amp - V_amp/(L*(1-a)):-(V_amp/(L*(1-a))):0;
