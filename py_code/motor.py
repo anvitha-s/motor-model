@@ -14,7 +14,6 @@ class Motor:
         self.time_period = t_p
         self.transition_time = t_jump
         self.state = [1]
-        self.velocity = []
 
     def increment_x(self):
         x_p = self.step_incr(self.x[-1])
@@ -32,7 +31,7 @@ class Motor:
            x_p = x_p +  self.pot[1].incr(x)*dt
        return x_p
 
-    def increment_x(self,w12,w21=None):
+    def increment_x(self,F_ext,w12,w21=None):
         if w21 != None: 
             s = np.random.uniform(0,1)
             if self.state[-1] == 1:
@@ -47,15 +46,15 @@ class Motor:
                     self.state.append(2)
             x_p = self.step_incr(self.x[-1],self.state)
             x_pp = self.step_incr(x_p,self.state)
-            self.x.append(float((x_p + x_pp)/2))
+            self.x.append(float((x_p + x_pp)/2) - F_ext*dt)
     
         else:
             if ((np.floor(self.x[-1] - self.pot[0].delta))%self.pot[0].L) == 0:
-                self.increment_x(w12,0)
+                self.increment_x(F_ext,w12,0)
             elif ((np.floor(self.x[-1] - self.pot[1].delta))%self.pot[1].L) == 0:
-                self.increment_x(0,w12)
+                self.increment_x(F_ext,0,w12)
             else:
-                self.increment_x(0,0)
+                self.increment_x(F_ext,0,0)
     
     def step_incr(self,x,state):              
         s=np.random.normal(0,1)
@@ -64,8 +63,9 @@ class Motor:
         return x_p
     
     def velocity(self):
-       self.avg_velocity = float((x[0] - x[-1])/(dt*len(self.x)))
-
+       self.avg_velocity = float((self.x[0] - self.x[-1])/(dt*len(self.x)))
+       return self.avg_velocity
+    
     def plotposition(self):
         x_plot = np.linspace(0, 10, num=1000)
         plt.plot(self.x,x_plot)
