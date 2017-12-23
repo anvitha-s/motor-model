@@ -44,9 +44,9 @@ class Motor:
                     self.state.append(1)
                 else:
                     self.state.append(2)
-            x_p = self.step_incr(self.x[-1],self.state)
-            x_pp = self.step_incr(x_p,self.state)
-            self.x.append(float((x_p + x_pp)/2) - F_ext*dt)
+            x_p = self.step_incr(self.x[-1],F_ext,self.state)
+            x_pp = self.step_incr(x_p,F_ext,self.state)
+            self.x.append(float((x_p + x_pp)/2))
     
         else:
             if ((np.floor(self.x[-1] - self.pot[0].delta))%self.pot[0].L) == 0:
@@ -56,10 +56,10 @@ class Motor:
             else:
                 self.increment_x(F_ext,0,0)
     
-    def step_incr(self,x,state):              
+    def step_incr(self,x,F_ext,state):              
         s=np.random.normal(0,1)
         x_p = x + ((2*dt)**(0.5))*s
-        x_p = x_p +  self.pot[self.state[-1]-1].incr(x)*dt
+        x_p = x_p +  self.pot[self.state[-1]-1].incr(x)*dt - F_ext*dt
         return x_p
     
     def velocity(self):
